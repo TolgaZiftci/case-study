@@ -36,4 +36,7 @@ public interface MovieRepository {
 
     @Delete("delete from movies where id=#{id}")
     void delete(Movie movie);
+
+    @Select("select count(*) from movies")
+    int count();
 }
