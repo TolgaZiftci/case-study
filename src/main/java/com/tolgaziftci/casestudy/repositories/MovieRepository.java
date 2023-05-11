@@ -2,9 +2,11 @@ package com.tolgaziftci.casestudy.repositories;
 
 import com.tolgaziftci.casestudy.models.Movie;
 import org.apache.ibatis.annotations.*;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 @Mapper
 public interface MovieRepository {
     @Select("select * from movies")
