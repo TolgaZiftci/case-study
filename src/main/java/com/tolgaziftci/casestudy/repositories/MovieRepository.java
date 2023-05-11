@@ -2,9 +2,11 @@ package com.tolgaziftci.casestudy.repositories;
 
 import com.tolgaziftci.casestudy.models.Movie;
 import org.apache.ibatis.annotations.*;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 @Mapper
 public interface MovieRepository {
     @Select("select * from movies")
@@ -34,4 +36,7 @@ public interface MovieRepository {
 
     @Delete("delete from movies where id=#{id}")
     void delete(Movie movie);
+
+    @Select("select count(*) from movies")
+    int count();
 }
