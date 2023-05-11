@@ -1,6 +1,6 @@
 create table movies(
-    --id integer not null primary key,
-    id integer not null generated always as identity primary key,
+    id integer not null auto_increment primary key,
+    --id integer not null generated always as identity primary key,
     title varchar(300) not null,
     publishyear varchar(20),
     rated varchar(20),

@@ -1,10 +1,7 @@
 package com.tolgaziftci.casestudy.repositories;
 
 import com.tolgaziftci.casestudy.models.Movie;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -27,4 +24,14 @@ public interface MovieRepository {
             "#{awards}, #{poster}, #{metascore}, #{imdbRating}, #{imdbVotes}, " +
             "#{imdbID}, #{type}, #{totalSeasons}, #{comingSoon})")
     void save(Movie movie);
+
+    @Update("update movies set title=#{title}, publishyear=#{publishYear}, rated=#{rated}, released=#{released}, " +
+            "runtime=#{runtime}, genre=#{genre}, director=#{director}, writer=#{writer}, actors=#{actors}, " +
+            "plot=#{plot}, language=#{language}, country=#{country}, awards=#{awards}, poster=#{poster}, " +
+            "metascore=#{metascore}, imdbrating=#{imdbRating}, imdbvotes=#{imdbVotes}, imdbID=#{imdbID}, " +
+            "type=#{type}, totalseasons=#{totalSeasons}, comingsoon=#{comingSoon} where id=#{id}")
+    void update(Movie movie);
+
+    @Delete("delete from movies where id=#{id}")
+    void delete(Movie movie);
 }
