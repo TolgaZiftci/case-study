@@ -15,6 +15,9 @@ public interface MovieRepository {
     @Select("select * from movies where id=#{id}")
     Movie getById(int id);
 
+    @Select("select * from movies where title=#{title}")
+    Movie getByTitle(String title);
+
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     @Insert("insert into movies (" +
             "title, publishyear, rated, released, runtime, genre, director, writer, actors, " +

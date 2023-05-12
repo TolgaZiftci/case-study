@@ -27,6 +27,11 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
+    public Movie getMovieByTitle(String title) {
+        return movieRepository.getByTitle(title);
+    }
+
+    @Override
     public void addMovie(Movie movie) {
         movieRepository.save(movie);
     }
