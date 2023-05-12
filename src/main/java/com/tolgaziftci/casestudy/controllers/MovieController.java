@@ -26,6 +26,11 @@ public class MovieController {
         return movieService.getAllMovies();
     }
 
+    @GetMapping("/movies/count")
+    public Integer getMovieCount(){
+        return movieService.getMovieCount();
+    }
+
     @GetMapping("/movies/{id}")
     public Movie getMovieById(@PathVariable("id") Integer id) {
         Movie movie;
@@ -58,5 +63,18 @@ public class MovieController {
     public void deleteMovie(@PathVariable("id") Integer id) {
         if (movieService.getMovieById(id) != null) movieService.deleteMovie(movieService.getMovieById(id));
         else throw new MovieNotFoundException(id);
+    }
+
+    @GetMapping("/movies/filter")
+    public List<Movie> filterMovies(@RequestParam(required = false) Double imdbRating,
+                                    @RequestParam(required = false) Boolean greaterThan,
+                                    @RequestParam(required = false) String director,
+                                    @RequestParam(required = false) String type){
+        return movieService.filterMovies(imdbRating, greaterThan, director, type);
+    }
+
+    @GetMapping("/movies/search")
+    public List<Movie> searchMovies(@RequestParam String title){
+        return movieService.searchMoviesByTitle(title);
     }
 }
