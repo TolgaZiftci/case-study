@@ -13,7 +13,7 @@ public class ExceptionAdvisor {
     }
 
     @ExceptionHandler(MovieAlreadyExistsException.class)
-    ResponseEntity<Object> movieAlreadyExistsHandler(MovieAlreadyExistsException ex){
+    ResponseEntity<Object> movieAlreadyExistsHandler(MovieAlreadyExistsException ex) {
         ExceptionResponse response = new ExceptionResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

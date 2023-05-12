@@ -27,7 +27,7 @@ public class MovieController {
     }
 
     @GetMapping("/movies/count")
-    public Integer getMovieCount(){
+    public Integer getMovieCount() {
         return movieService.getMovieCount();
     }
 
@@ -39,24 +39,22 @@ public class MovieController {
     }
 
     @PostMapping("/movies")
-    public Movie addMovie(@RequestBody AddMovieDTO dto){
-        if (movieService.getMovieByTitle(dto.getTitle()) == null){
+    public Movie addMovie(@RequestBody AddMovieDTO dto) {
+        if (movieService.getMovieByTitle(dto.getTitle()) == null) {
             Movie movie = mappingService.convertDTOToMovie(dto);
             movieService.addMovie(movie);
             return movie;
-        }
-        else throw new MovieAlreadyExistsException(dto.getTitle());
+        } else throw new MovieAlreadyExistsException(dto.getTitle());
     }
 
     @PutMapping("/movies/{id}")
-    public Movie updateMovie(@PathVariable("id") Integer id, @RequestBody AddMovieDTO dto){
-        if (movieService.getMovieById(id) != null){
+    public Movie updateMovie(@PathVariable("id") Integer id, @RequestBody AddMovieDTO dto) {
+        if (movieService.getMovieById(id) != null) {
             Movie movie = mappingService.convertDTOToMovie(dto);
             movie.setId(id);
             movieService.updateMovie(movie);
             return movie;
-        }
-        else throw new MovieNotFoundException(id);
+        } else throw new MovieNotFoundException(id);
     }
 
     @DeleteMapping("/movies/{id}")
@@ -69,12 +67,12 @@ public class MovieController {
     public List<Movie> filterMovies(@RequestParam(required = false) Double imdbRating,
                                     @RequestParam(required = false) Boolean greaterThan,
                                     @RequestParam(required = false) String director,
-                                    @RequestParam(required = false) String type){
+                                    @RequestParam(required = false) String type) {
         return movieService.filterMovies(imdbRating, greaterThan, director, type);
     }
 
     @GetMapping("/movies/search")
-    public List<Movie> searchMovies(@RequestParam String title){
+    public List<Movie> searchMovies(@RequestParam String title) {
         return movieService.searchMoviesByTitle(title);
     }
 }
