@@ -27,7 +27,7 @@ public class MovieController {
     }
 
     @GetMapping("/movies/{id}")
-    public Movie getMovieById(@PathVariable("id") int id) {
+    public Movie getMovieById(@PathVariable("id") Integer id) {
         Movie movie;
         if ((movie = movieService.getMovieById(id)) != null) return movie;
         else throw new MovieNotFoundException(id);
@@ -41,6 +41,17 @@ public class MovieController {
             return movie;
         }
         else throw new MovieAlreadyExistsException(dto.getTitle());
+    }
+
+    @PutMapping("/movies/{id}")
+    public Movie updateMovie(@PathVariable("id") Integer id, @RequestBody AddMovieDTO dto){
+        if (movieService.getMovieById(id) != null){
+            Movie movie = mappingService.convertDTOToMovie(dto);
+            movie.setId(id);
+            movieService.updateMovie(movie);
+            return movie;
+        }
+        else throw new MovieNotFoundException(id);
     }
 
     @DeleteMapping("/movies/{id}")
