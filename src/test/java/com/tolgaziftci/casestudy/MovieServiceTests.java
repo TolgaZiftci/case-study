@@ -1,6 +1,7 @@
 package com.tolgaziftci.casestudy;
 
 import com.tolgaziftci.casestudy.models.Movie;
+import com.tolgaziftci.casestudy.models.MovieEntity;
 import com.tolgaziftci.casestudy.repositories.MovieRepository;
 import com.tolgaziftci.casestudy.services.MovieService;
 import com.tolgaziftci.casestudy.services.MovieServiceImpl;
@@ -18,7 +19,7 @@ import static org.mockito.Mockito.*;
 public class MovieServiceTests {
     private MovieService movieService;
 
-    private final List<Movie> movieList = new ArrayList<>();
+    private List<Movie> movieList = new ArrayList<>();
 
     @Mock
     private MovieRepository movieRepository;
@@ -28,19 +29,14 @@ public class MovieServiceTests {
         MockitoAnnotations.initMocks(this);
         movieService = new MovieServiceImpl(movieRepository);
 
-        Movie movie = new Movie("Avatar", "James Cameron", "James Cameron", 8.5, "movie");
-        movieList.add(movie);
-        movie = new Movie("300", "Zack Snyder", "Zack Snyder", 7.5, "movie");
-        movieList.add(movie);
-        movie = new Movie("Game of Thrones", "N/A", "David Benioff", 6.5, "series");
-        movieList.add(movie);
+        movieList = prepareTestData();
     }
 
     @Test
     public void getAllMovies() {
         when(movieRepository.getAll()).thenReturn(movieList);
 
-        List<Movie> movies = movieService.getAllMovies();
+        List<MovieEntity> movies = movieService.getAllMovies();
 
         assertEquals(3, movies.size());
     }
@@ -57,7 +53,18 @@ public class MovieServiceTests {
 
     @Test
     public void addMovie() {
-        Movie movie = new Movie("test", "tolga ziftci", "tolga ziftci", 5.5, "movie");
+        Movie movie = Movie.builder()
+                .id(4)
+                .title("test")
+                .genre("")
+                .director("test")
+                .writer("")
+                .actors("")
+                .language("")
+                .country("")
+                .imdbRating(8.5)
+                .type("movie")
+                .build();
         doAnswer(invocationOnMock -> movieList.add(invocationOnMock.getArgument(0))).when(movieRepository).save(movie);
         when(movieRepository.getAll()).thenReturn(movieList);
 
@@ -82,9 +89,56 @@ public class MovieServiceTests {
     public void filterMovies() {
         when(movieRepository.getAll()).thenReturn(movieList);
 
-        List<Movie> filtered = movieService.filterMovies(8.0, true, null, "movie");
+        List<MovieEntity> filtered = movieService.filterMovies(8.0, true, null, "movie");
 
         assertEquals(1, filtered.size());
         assertEquals("Avatar", filtered.get(0).getTitle());
+    }
+
+    private static List<Movie> prepareTestData() {
+        List<Movie> movieList = new ArrayList<>();
+        movieList.add(
+                Movie.builder()
+                        .id(1)
+                        .title("Avatar")
+                        .genre("")
+                        .director("James Cameron")
+                        .writer("")
+                        .actors("")
+                        .language("")
+                        .country("")
+                        .imdbRating(8.5)
+                        .type("movie")
+                        .build()
+        );
+        movieList.add(
+                Movie.builder()
+                        .id(2)
+                        .title("300")
+                        .genre("")
+                        .director("Zack Snyder")
+                        .writer("")
+                        .actors("")
+                        .language("")
+                        .country("")
+                        .imdbRating(7.5)
+                        .type("movie")
+                        .build()
+        );
+        movieList.add(
+                Movie.builder()
+                        .id(3)
+                        .title("Game of Thrones")
+                        .genre("")
+                        .director("N/A")
+                        .writer("")
+                        .actors("")
+                        .language("")
+                        .country("")
+                        .imdbRating(6.5)
+                        .type("series")
+                        .build()
+        );
+        return movieList;
     }
 }
