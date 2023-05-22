@@ -1,7 +1,9 @@
 package com.tolgaziftci.casestudy.services;
 
 import com.tolgaziftci.casestudy.models.Movie;
+import com.tolgaziftci.casestudy.models.MovieEntity;
 import com.tolgaziftci.casestudy.repositories.MovieRepository;
+import com.tolgaziftci.casestudy.utils.MovieEntityUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,18 +19,19 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public List<Movie> getAllMovies() {
-        return movieRepository.getAll();
+    public List<MovieEntity> getAllMovies() {
+        return movieRepository.getAll().stream()
+                .map(MovieEntityUtils::convertMovieToEntity).collect(Collectors.toList());
     }
 
     @Override
-    public Movie getMovieById(int id) {
-        return movieRepository.getById(id);
+    public MovieEntity getMovieById(int id) {
+        return MovieEntityUtils.convertMovieToEntity(movieRepository.getById(id));
     }
 
     @Override
-    public Movie getMovieByTitle(String title) {
-        return movieRepository.getByTitle(title);
+    public MovieEntity getMovieByTitle(String title) {
+        return MovieEntityUtils.convertMovieToEntity(movieRepository.getByTitle(title));
     }
 
     @Override
@@ -51,17 +54,16 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public List<Movie> searchMoviesByTitle(String title) {
-        List<Movie> movieList = getAllMovies();
-
-        return movieList.stream()
+    public List<MovieEntity> searchMoviesByTitle(String title) {
+        return movieRepository.getAll().stream()
                 .filter(movie -> movie.getTitle().toLowerCase(Locale.ROOT).contains(title.toLowerCase(Locale.ROOT)))
+                .map(MovieEntityUtils::convertMovieToEntity)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Movie> filterMovies(Double rating, Boolean greaterThan, String director, String type) {
-        List<Movie> movieList = getAllMovies();
+    public List<MovieEntity> filterMovies(Double rating, Boolean greaterThan, String director, String type) {
+        List<Movie> movieList = movieRepository.getAll();
         if (rating != null && greaterThan != null) {
             movieList = filterByRating(movieList, rating, greaterThan);
         }
@@ -71,7 +73,7 @@ public class MovieServiceImpl implements MovieService {
         if (type != null) {
             movieList = filterByType(movieList, type);
         }
-        return movieList;
+        return movieList.stream().map(MovieEntityUtils::convertMovieToEntity).collect(Collectors.toList());
     }
 
     private List<Movie> filterByRating(List<Movie> movieList, Double rating, boolean greaterThan) {
