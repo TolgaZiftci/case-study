@@ -1,15 +1,16 @@
 package com.tolgaziftci.casestudy.services;
 
 import com.tolgaziftci.casestudy.models.Movie;
+import com.tolgaziftci.casestudy.models.MovieEntity;
 
 import java.util.List;
 
 public interface MovieService {
-    List<Movie> getAllMovies();
+    List<MovieEntity> getAllMovies();
 
-    Movie getMovieById(int id);
+    MovieEntity getMovieById(int id);
 
-    Movie getMovieByTitle(String title);
+    MovieEntity getMovieByTitle(String title);
 
     void addMovie(Movie movie);
 
@@ -19,8 +20,8 @@ public interface MovieService {
 
     int getMovieCount();
 
-    List<Movie> filterMovies(Double rating, Boolean greaterThan, String director, String type);
+    List<MovieEntity> filterMovies(Double rating, Boolean greaterThan, String director, String type);
 
-    List<Movie> searchMoviesByTitle(String title);
+    List<MovieEntity> searchMoviesByTitle(String title);
 
 }

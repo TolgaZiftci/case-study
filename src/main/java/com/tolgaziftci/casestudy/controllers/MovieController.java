@@ -4,8 +4,10 @@ import com.tolgaziftci.casestudy.dto.AddMovieDTO;
 import com.tolgaziftci.casestudy.exceptions.MovieAlreadyExistsException;
 import com.tolgaziftci.casestudy.exceptions.MovieNotFoundException;
 import com.tolgaziftci.casestudy.models.Movie;
+import com.tolgaziftci.casestudy.models.MovieEntity;
 import com.tolgaziftci.casestudy.services.MappingService;
 import com.tolgaziftci.casestudy.services.MovieService;
+import com.tolgaziftci.casestudy.utils.MovieEntityUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +24,7 @@ public class MovieController {
     }
 
     @GetMapping("/movies")
-    public List<Movie> getMovies() {
+    public List<MovieEntity> getMovies() {
         return movieService.getAllMovies();
     }
 
@@ -32,8 +34,8 @@ public class MovieController {
     }
 
     @GetMapping("/movies/{id}")
-    public Movie getMovieById(@PathVariable("id") Integer id) {
-        Movie movie;
+    public MovieEntity getMovieById(@PathVariable("id") Integer id) {
+        MovieEntity movie;
         if ((movie = movieService.getMovieById(id)) != null) return movie;
         else throw new MovieNotFoundException(id);
     }
@@ -59,20 +61,21 @@ public class MovieController {
 
     @DeleteMapping("/movies/{id}")
     public void deleteMovie(@PathVariable("id") Integer id) {
-        if (movieService.getMovieById(id) != null) movieService.deleteMovie(movieService.getMovieById(id));
+        if (movieService.getMovieById(id) != null)
+            movieService.deleteMovie(MovieEntityUtils.convertEntityToMovie(movieService.getMovieById(id)));
         else throw new MovieNotFoundException(id);
     }
 
     @GetMapping("/movies/filter")
-    public List<Movie> filterMovies(@RequestParam(required = false) Double imdbRating,
-                                    @RequestParam(required = false) Boolean greaterThan,
-                                    @RequestParam(required = false) String director,
-                                    @RequestParam(required = false) String type) {
+    public List<MovieEntity> filterMovies(@RequestParam(required = false) Double imdbRating,
+                                          @RequestParam(required = false) Boolean greaterThan,
+                                          @RequestParam(required = false) String director,
+                                          @RequestParam(required = false) String type) {
         return movieService.filterMovies(imdbRating, greaterThan, director, type);
     }
 
     @GetMapping("/movies/search")
-    public List<Movie> searchMovies(@RequestParam String title) {
+    public List<MovieEntity> searchMovies(@RequestParam String title) {
         return movieService.searchMoviesByTitle(title);
     }
 }

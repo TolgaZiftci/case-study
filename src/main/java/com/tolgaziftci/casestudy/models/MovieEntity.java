@@ -1,38 +1,36 @@
 package com.tolgaziftci.casestudy.models;
 
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
 @Builder
-public class Movie {
+public class MovieEntity {
     private Integer id;
-    @NonNull
     private String title;
     private String publishYear;
     private String rated;
     private LocalDate released;
     private String runtime;
-    private String genre;
-    @NonNull
+    private List<String> genre;
     private String director;
-    @NonNull
-    private String writer;
-    private String actors;
+    private List<String> writer;
+    private List<String> actors;
     private String plot;
-    private String language;
-    private String country;
+    private List<String> language;
+    private List<String> country;
     private String awards;
     private String poster;
     private Integer metascore;
-    @NonNull
     private Double imdbRating;
     private Integer imdbVotes;
     private String imdbID;
-    @NonNull
     private String type;
     private Integer totalSeasons;
     private Boolean comingSoon;
