@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tolgaziftci.casestudy.repositories.MovieRepository">
+    <select id="getAll" resultType="com.tolgaziftci.casestudy.models.Movie">
+        select * from movies
+    </select>
+
+    <select id="getById" parameterType="int" resultType="com.tolgaziftci.casestudy.models.Movie">
+        select * from movies where id=#{id}
+    </select>
+
+    <select id="getByTitle" parameterType="string" resultType="com.tolgaziftci.casestudy.models.Movie">
+        select * from movies where title=#{title}
+    </select>
+
+    <insert id="save" parameterType="com.tolgaziftci.casestudy.models.Movie" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into movies (title, publishyear, rated, released, runtime, genre, director, writer, actors,
+                            plot, language, country, awards, poster, metascore, imdbrating, imdbvotes,
+                            imdbID, type, totalseasons, comingsoon
+                            ) values (
+                            #{title}, #{publishYear}, #{rated}, #{released}, #{runtime}, #{genre},
+                            #{director}, #{writer}, #{actors}, #{plot}, #{language}, #{country},
+                            #{awards}, #{poster}, #{metascore}, #{imdbRating}, #{imdbVotes},
+                            #{imdbID}, #{type}, #{totalSeasons}, #{comingSoon})
+    </insert>
+
+    <update id="update" parameterType="com.tolgaziftci.casestudy.models.Movie">
+        update movies set title=#{title}, publishyear=#{publishYear}, rated=#{rated}, released=#{released},
+            runtime=#{runtime}, genre=#{genre}, director=#{director}, writer=#{writer}, actors=#{actors},
+            plot=#{plot}, language=#{language}, country=#{country}, awards=#{awards}, poster=#{poster},
+            metascore=#{metascore}, imdbrating=#{imdbRating}, imdbvotes=#{imdbVotes}, imdbID=#{imdbID},
+            type=#{type}, totalseasons=#{totalSeasons}, comingsoon=#{comingSoon} where id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="com.tolgaziftci.casestudy.models.Movie">
+        delete from movies where id=#{id}
+    </delete>
+
+    <select id="count" resultType="int">
+        select count(*) from movies
+    </select>
+</mapper>
