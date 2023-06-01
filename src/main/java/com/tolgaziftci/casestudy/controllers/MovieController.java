@@ -1,13 +1,12 @@
 package com.tolgaziftci.casestudy.controllers;
 
 import com.tolgaziftci.casestudy.dto.MovieDTO;
-import com.tolgaziftci.casestudy.exceptions.ExceptionResponse;
 import com.tolgaziftci.casestudy.models.Movie;
 import com.tolgaziftci.casestudy.models.MovieEntity;
+import com.tolgaziftci.casestudy.responses.RestResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,14 +25,10 @@ public interface MovieController {
             tags = {"get"}
     )
     @ApiResponse(
-            responseCode = "200",
-            content = @Content(
-                    mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = MovieEntity.class))
-            )
+            responseCode = "200", useReturnTypeSchema = true
     )
     @GetMapping("/movies")
-    List<MovieEntity> getMovies();
+    RestResponse<List<MovieEntity>> getMovies();
 
     @Operation(
             summary = "Get movie count",
@@ -41,14 +36,10 @@ public interface MovieController {
             tags = {"get"}
     )
     @ApiResponse(
-            responseCode = "200",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = Integer.class)
-            )
+            responseCode = "200", useReturnTypeSchema = true
     )
     @GetMapping("/movies/count")
-    Integer getMovieCount();
+    RestResponse<Integer> getMovieCount();
 
     @Operation(
             summary = "Get movie by id",
@@ -56,22 +47,17 @@ public interface MovieController {
             tags = {"get"}
     )
     @ApiResponse(
-            responseCode = "200",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = MovieEntity.class)
-            )
+            responseCode = "200", useReturnTypeSchema = true
     )
     @ApiResponse(
             responseCode = "404",
-            description = "Movie with given id not found",
+            description = "Movie with given id not found. Payload will be null",
             content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = ExceptionResponse.class)
+                    schema = @Schema(implementation = RestResponse.class)
             )
     )
     @GetMapping("/movies/{id}")
-    MovieEntity getMovieById(@PathVariable("id") Integer id);
+    RestResponse<MovieEntity> getMovieById(@PathVariable("id") Integer id);
 
     @Operation(
             summary = "Add movie",
@@ -83,30 +69,25 @@ public interface MovieController {
                     "'imdbRating' field must be between 0.0 and 10.0"
     )
     @ApiResponse(
-            responseCode = "200",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = Movie.class)
-            )
+            responseCode = "200", useReturnTypeSchema = true
     )
     @ApiResponse(
             responseCode = "400",
-            description = "Movie with given title already exists",
+            description = "Movie with given title already exists, or input validation failed. Payload will be " +
+                    "null for the former case, and contain all validation errors in the latter",
             content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = ExceptionResponse.class)
+                    schema = @Schema(implementation = RestResponse.class)
             )
     )
-    @ApiResponse(
-            responseCode = "400",
-            description = "Validation for input data failed",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = ExceptionResponse.class)
-            )
-    )
+//    @ApiResponse(
+//            responseCode = "400",
+//            description = "Validation for input data failed. Payload will contain a list of validation error messages",
+//            content = @Content(
+//                    schema = @Schema(implementation = RestResponse.class)
+//            )
+//    )
     @PostMapping("/movies")
-    Movie addMovie(@RequestBody @Valid MovieDTO dto);
+    RestResponse<Movie> addMovie(@RequestBody @Valid MovieDTO dto);
 
     @Operation(
             summary = "Update movie",
@@ -118,30 +99,24 @@ public interface MovieController {
                     "'imdbRating' field must be between 0.0 and 10.0"
     )
     @ApiResponse(
-            responseCode = "200",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = Movie.class)
-            )
+            responseCode = "200", useReturnTypeSchema = true
     )
     @ApiResponse(
             responseCode = "404",
-            description = "Movie with given id not found",
+            description = "Movie with given id not found. Payload will be null",
             content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = ExceptionResponse.class)
+                    schema = @Schema(implementation = RestResponse.class)
             )
     )
     @ApiResponse(
             responseCode = "400",
-            description = "Validation for input data failed",
+            description = "Validation for input data failed. Payload will contain a list of validation error messages",
             content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = ExceptionResponse.class)
+                    schema = @Schema(implementation = RestResponse.class)
             )
     )
     @PutMapping("/movies/{id}")
-    Movie updateMovie(@PathVariable("id") Integer id, @RequestBody @Valid MovieDTO dto);
+    RestResponse<Movie> updateMovie(@PathVariable("id") Integer id, @RequestBody @Valid MovieDTO dto);
 
     @Operation(
             summary = "Delete movie",
@@ -149,22 +124,17 @@ public interface MovieController {
             tags = {"delete"}
     )
     @ApiResponse(
-            responseCode = "200",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema()
-            )
+            responseCode = "200", useReturnTypeSchema = true
     )
     @ApiResponse(
             responseCode = "404",
-            description = "Movie with given id not found",
+            description = "Movie with given id not found. Payload will be null",
             content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = ExceptionResponse.class)
+                    schema = @Schema(implementation = RestResponse.class)
             )
     )
     @DeleteMapping("/movies/{id}")
-    void deleteMovie(@PathVariable("id") Integer id);
+    RestResponse<MovieEntity> deleteMovie(@PathVariable("id") Integer id);
 
     @Operation(
             summary = "Filter movies",
@@ -192,14 +162,10 @@ public interface MovieController {
             description = "Type based filtering, only possible values are 'movie' and 'series'"
     )
     @ApiResponse(
-            responseCode = "200",
-            content = @Content(
-                    mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = MovieEntity.class))
-            )
+            responseCode = "200", useReturnTypeSchema = true
     )
     @GetMapping("/movies/filter")
-    List<MovieEntity> filterMovies(@RequestParam(required = false) Double imdbRating,
+    RestResponse<List<MovieEntity>> filterMovies(@RequestParam(required = false) Double imdbRating,
                                    @RequestParam(required = false) Boolean greaterThan,
                                    @RequestParam(required = false) String director,
                                    @RequestParam(required = false) String type);
@@ -216,12 +182,8 @@ public interface MovieController {
             required = true
     )
     @ApiResponse(
-            responseCode = "200",
-            content = @Content(
-                    mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = MovieEntity.class))
-            )
+            responseCode = "200", useReturnTypeSchema = true
     )
     @GetMapping("/movies/search")
-    List<MovieEntity> searchMovies(@RequestParam String title);
+    RestResponse<List<MovieEntity>> searchMovies(@RequestParam String title);
 }
