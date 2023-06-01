@@ -1,94 +1,227 @@
 package com.tolgaziftci.casestudy.controllers;
 
 import com.tolgaziftci.casestudy.dto.MovieDTO;
-import com.tolgaziftci.casestudy.exceptions.MovieAlreadyExistsException;
-import com.tolgaziftci.casestudy.exceptions.MovieNotFoundException;
+import com.tolgaziftci.casestudy.exceptions.ExceptionResponse;
 import com.tolgaziftci.casestudy.models.Movie;
 import com.tolgaziftci.casestudy.models.MovieEntity;
-import com.tolgaziftci.casestudy.services.MappingService;
-import com.tolgaziftci.casestudy.services.MovieService;
-import com.tolgaziftci.casestudy.utils.MovieEntityUtils;
-import lombok.extern.slf4j.Slf4j;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 
-@RestController
-@Slf4j
+@Tag(name = "Movies", description = "Movie data management endpoints")
 @RequestMapping("/api")
-public class MovieController {
-    private final MovieService movieService;
-    private final MappingService mappingService;
-
-    public MovieController(MovieService movieService, MappingService mappingService) {
-        this.movieService = movieService;
-        this.mappingService = mappingService;
-    }
-
+public interface MovieController {
+    @Operation(
+            summary = "Get all movies",
+            description = "Get a list containing all movie data",
+            tags = {"get"}
+    )
+    @ApiResponse(
+            responseCode = "200",
+            content = @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = MovieEntity.class))
+            )
+    )
     @GetMapping("/movies")
-    public List<MovieEntity> getMovies() {
-        log.info("Getting list of all movies");
-        return movieService.getAllMovies();
-    }
+    List<MovieEntity> getMovies();
 
+    @Operation(
+            summary = "Get movie count",
+            description = "Get the number of movies in the database",
+            tags = {"get"}
+    )
+    @ApiResponse(
+            responseCode = "200",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Integer.class)
+            )
+    )
     @GetMapping("/movies/count")
-    public Integer getMovieCount() {
-        log.info("Getting movie count");
-        return movieService.getMovieCount();
-    }
+    Integer getMovieCount();
 
+    @Operation(
+            summary = "Get movie by id",
+            description = "Get a single movie object by its id",
+            tags = {"get"}
+    )
+    @ApiResponse(
+            responseCode = "200",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = MovieEntity.class)
+            )
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Movie with given id not found",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ExceptionResponse.class)
+            )
+    )
     @GetMapping("/movies/{id}")
-    public MovieEntity getMovieById(@PathVariable("id") Integer id) {
-        log.info("Getting movie with id " + id);
-        MovieEntity movie;
-        if ((movie = movieService.getMovieById(id)) != null) return movie;
-        else throw new MovieNotFoundException(id);
-    }
+    MovieEntity getMovieById(@PathVariable("id") Integer id);
 
+    @Operation(
+            summary = "Add movie",
+            description = "Adds a new movie to the database",
+            tags = {"post"}
+    )
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "'released' field date format must be dd MMM yyyy (e.g. 23 Feb 2023), " +
+                    "'imdbRating' field must be between 0.0 and 10.0"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Movie.class)
+            )
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Movie with given title already exists",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ExceptionResponse.class)
+            )
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Validation for input data failed",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ExceptionResponse.class)
+            )
+    )
     @PostMapping("/movies")
-    public Movie addMovie(@RequestBody @Valid MovieDTO dto) {
-        log.info("Attempting to add movie '" + dto.getTitle() + "'");
-        if (movieService.getMovieByTitle(dto.getTitle()) == null) {
-            Movie movie = mappingService.convertDTOToMovie(dto);
-            movieService.addMovie(movie);
-            log.info("Successfully added with id " + movie.getId());
-            return movie;
-        } else throw new MovieAlreadyExistsException(dto.getTitle());
-    }
+    Movie addMovie(@RequestBody @Valid MovieDTO dto);
 
+    @Operation(
+            summary = "Update movie",
+            description = "Updates the data of a movie in the database",
+            tags = {"put"}
+    )
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "'released' field date format must be dd MMM yyyy (e.g. 23 Feb 2023), " +
+                    "'imdbRating' field must be between 0.0 and 10.0"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Movie.class)
+            )
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Movie with given id not found",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ExceptionResponse.class)
+            )
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Validation for input data failed",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ExceptionResponse.class)
+            )
+    )
     @PutMapping("/movies/{id}")
-    public Movie updateMovie(@PathVariable("id") Integer id, @RequestBody @Valid MovieDTO dto) {
-        log.info("Attempting to update movie " + id);
-        if (movieService.getMovieById(id) != null) {
-            Movie movie = mappingService.convertDTOToMovie(dto);
-            movie.setId(id);
-            movieService.updateMovie(movie);
-            log.info("Successfully updated movie " + id);
-            return movie;
-        } else throw new MovieNotFoundException(id);
-    }
+    Movie updateMovie(@PathVariable("id") Integer id, @RequestBody @Valid MovieDTO dto);
 
+    @Operation(
+            summary = "Delete movie",
+            description = "Deletes a movie from the database",
+            tags = {"delete"}
+    )
+    @ApiResponse(
+            responseCode = "200",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema()
+            )
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Movie with given id not found",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ExceptionResponse.class)
+            )
+    )
     @DeleteMapping("/movies/{id}")
-    public void deleteMovie(@PathVariable("id") Integer id) {
-        log.info("Deleting movie " + id);
-        if (movieService.getMovieById(id) != null)
-            movieService.deleteMovie(MovieEntityUtils.convertEntityToMovie(movieService.getMovieById(id)));
-        else throw new MovieNotFoundException(id);
-    }
+    void deleteMovie(@PathVariable("id") Integer id);
 
+    @Operation(
+            summary = "Filter movies",
+            description = "Get a list containing all movie data that fits into the given filters",
+            tags = {"get"}
+    )
+    @Parameter(
+            name = "imdbRating",
+            in = ParameterIn.QUERY,
+            description = "Rating threshold for filter, used together with greaterThan"
+    )
+    @Parameter(
+            name = "greaterThan",
+            in = ParameterIn.QUERY,
+            description = "Filter above or below threshold, used together with imdbRating"
+    )
+    @Parameter(
+            name = "director",
+            in = ParameterIn.QUERY,
+            description = "Director name based filtering"
+    )
+    @Parameter(
+            name = "type",
+            in = ParameterIn.QUERY,
+            description = "Type based filtering, only possible values are 'movie' and 'series'"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            content = @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = MovieEntity.class))
+            )
+    )
     @GetMapping("/movies/filter")
-    public List<MovieEntity> filterMovies(@RequestParam(required = false) Double imdbRating,
-                                          @RequestParam(required = false) Boolean greaterThan,
-                                          @RequestParam(required = false) String director,
-                                          @RequestParam(required = false) String type) {
-        log.info("Filtering movies");
-        return movieService.filterMovies(imdbRating, greaterThan, director, type);
-    }
+    List<MovieEntity> filterMovies(@RequestParam(required = false) Double imdbRating,
+                                   @RequestParam(required = false) Boolean greaterThan,
+                                   @RequestParam(required = false) String director,
+                                   @RequestParam(required = false) String type);
 
+    @Operation(
+            summary = "Search movies",
+            description = "Get a list containing all movie data with the title containing the given string",
+            tags = {"get"}
+    )
+    @Parameter(
+            name = "title",
+            in = ParameterIn.QUERY,
+            description = "String to search in titles",
+            required = true
+    )
+    @ApiResponse(
+            responseCode = "200",
+            content = @Content(
+                    mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = MovieEntity.class))
+            )
+    )
     @GetMapping("/movies/search")
-    public List<MovieEntity> searchMovies(@RequestParam String title) {
-        log.info("Searching movies by title");
-        return movieService.searchMoviesByTitle(title);
-    }
+    List<MovieEntity> searchMovies(@RequestParam String title);
 }
